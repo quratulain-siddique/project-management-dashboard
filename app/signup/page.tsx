@@ -15,6 +15,7 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "Not Assigned",
   });
   const [error, setError] = useState("");
   const handleChange = (

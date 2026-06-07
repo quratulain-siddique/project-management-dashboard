@@ -23,6 +23,8 @@ export default function ProjectsPage() {
         name: "",
         description: "",
         status: "Active",
+        role: "Not Assigned",
+
     });
 
     const fetchProjects = async () => {
@@ -44,6 +46,7 @@ export default function ProjectsPage() {
             name: "",
             description: "",
             status: "Active",
+            role: "Not Assigned",
         });
 
         setEditingProject(null);
@@ -99,6 +102,7 @@ export default function ProjectsPage() {
             name: project.name,
             description: project.description,
             status: project.status,
+            role: "Not Assigned",
         });
 
         setShowModal(true);

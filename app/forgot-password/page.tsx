@@ -17,6 +17,7 @@ export default function ForgotPasswordPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "Not Assigned",
   });
 
   const [error, setError] = useState("");

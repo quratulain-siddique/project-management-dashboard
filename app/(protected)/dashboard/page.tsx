@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
+import Link from "next/link";
 export default function DashboardPage() {
   const router = useRouter();
 
@@ -166,22 +166,37 @@ export default function DashboardPage() {
               Recent Projects
             </h3>
 
-            <ul className="space-y-3">
+            <div className="space-y-3">
               {recentProjects.length === 0 ? (
-                <li className="rounded border p-3">
+                <div className="rounded-xl border border-dashed p-4 text-center text-gray-500">
                   No projects found
-                </li>
+                </div>
               ) : (
                 recentProjects.map((project) => (
-                  <li
+                  <Link
                     key={project.id}
-                    className="rounded border p-3"
+                    href={`/projects/${project.id}`}
+                    className="block rounded-xl border bg-gradient-to-r from-blue-50 to-white p-4 transition-all hover:-translate-y-1 hover:border-blue-400 hover:shadow-lg"
                   >
-                    {project.name}
-                  </li>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          {project.name}
+                        </h4>
+
+                        <p className="mt-1 text-sm text-gray-500">
+                          {project.description || "No description"}
+                        </p>
+                      </div>
+
+                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+                        {project.status}
+                      </span>
+                    </div>
+                  </Link>
                 ))
               )}
-            </ul>
+            </div>
           </div>
 
           <div className="rounded-xl bg-white p-6 shadow">
@@ -189,22 +204,44 @@ export default function DashboardPage() {
               Recent Tasks
             </h3>
 
-            <ul className="space-y-3">
+            <div className="space-y-3">
               {recentTasks.length === 0 ? (
-                <li className="rounded border p-3">
+                <div className="rounded-xl border border-dashed p-4 text-center text-gray-500">
                   No tasks found
-                </li>
+                </div>
               ) : (
                 recentTasks.map((task) => (
-                  <li
+                  <Link
                     key={task.id}
-                    className="rounded border p-3"
+                    href={`/tasks/${task.id}`}
+                    className="block rounded-xl border bg-gradient-to-r from-amber-50 to-white p-4 transition-all hover:-translate-y-1 hover:border-amber-400 hover:shadow-lg"
                   >
-                    {task.title}
-                  </li>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          {task.title}
+                        </h4>
+
+                        <p className="mt-1 text-sm text-gray-500">
+                          {task.assignedUser || "Unassigned"}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${task.priority === "High"
+                          ? "bg-red-100 text-red-700"
+                          : task.priority === "Medium"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                          }`}
+                      >
+                        {task.priority}
+                      </span>
+                    </div>
+                  </Link>
                 ))
               )}
-            </ul>
+            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,9 @@
 "use client";
-
+import {
+    DragDropContext,
+    Droppable,
+    Draggable,
+} from "@hello-pangea/dnd";
 import { api } from "@/lib/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -51,7 +55,7 @@ export default function ProjectDetailsPage() {
         priority: "Medium",
         dueDate: "",
         assignedUser: "None",
-        status: "Pending",
+        status: "Backlog",
     });
 
     const fetchProject = async () => {
@@ -103,7 +107,7 @@ export default function ProjectDetailsPage() {
             priority: "Medium",
             dueDate: "",
             assignedUser: "",
-            status: "Pending",
+            status: "Backlog",
         });
 
         setEditingTask(null);
@@ -188,7 +192,29 @@ export default function ProjectDetailsPage() {
             </div>
         );
     }
+    const columns = [
+        "Backlog",
+        "In Development",
+        "In Review",
+        "Shipped",
+    ];
+    const handleDragEnd = async (result: any) => {
+        if (!result.destination) return;
 
+        const taskId = result.draggableId;
+        const newStatus = result.destination.droppableId;
+
+        try {
+            await api.patch(`/tasks/${taskId}`, {
+                status: newStatus,
+            });
+
+            fetchTasks();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to update task");
+        }
+    };
     return (
         <div>
             {/* Project Info */}
@@ -232,94 +258,118 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Tasks Table */}
-            <div className="overflow-hidden rounded-xl bg-white shadow">
-                <table className="w-full">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="p-4 text-left">
-                                Title
-                            </th>
-
-                            <th className="p-4 text-left">
-                                Priority
-                            </th>
-
-                            <th className="p-4 text-left">
-                                Assigned To
-                            </th>
-
-                            <th className="p-4 text-left">
-                                Status
-                            </th>
-
-                            <th className="p-4 text-left">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {tasks.length === 0 ? (
-                            <tr>
-                                <td
-                                    colSpan={5}
-                                    className="p-6 text-center"
+            <DragDropContext onDragEnd={handleDragEnd}>
+                <div className="grid gap-2 lg:grid-cols-4">
+                    {columns.map((column) => (
+                        <Droppable
+                            key={column}
+                            droppableId={column}
+                        >
+                            {(provided) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    className="min-h-[500px] rounded-xl bg-gray-100 p-4"
                                 >
-                                    No tasks found
-                                </td>
-                            </tr>
-                        ) : (
-                            tasks.map((task) => (
-                                <tr
-                                    key={task.id}
-                                    className="border-t"
-                                >
-                                    <td className="p-4">
-                                        {task.title}
-                                    </td>
+                                    <h3 className="mb-4 text-lg font-bold">
+                                        {column}
+                                    </h3>
 
-                                    <td className="p-4">
-                                        {task.priority}
-                                    </td>
-
-                                    <td className="p-4">
-                                        {task.assignedUser || "None"}
-                                    </td>
-
-                                    <td className="p-4">
-                                        {task.status}
-                                    </td>
-
-                                    <td className="p-4">
-                                        <div className="flex gap-3">
-                                            <Link href={`/tasks/${task.id}`}>
-                                                View
-                                            </Link>
-                                            <button
-                                                onClick={() =>
-                                                    handleEdit(task)
-                                                }
-                                                className="text-yellow-600"
+                                    {tasks
+                                        .filter(
+                                            (task) =>
+                                                task.status === column
+                                        )
+                                        .map((task, index) => (
+                                            <Draggable
+                                                key={task.id}
+                                                draggableId={task.id}
+                                                index={index}
                                             >
-                                                Edit
-                                            </button>
+                                                {(provided) => {
+                                                    const isOverdue =
+                                                        task.dueDate &&
+                                                        new Date(task.dueDate) <
+                                                        new Date(
+                                                            new Date().toISOString().split("T")[0]
+                                                        );
 
-                                            <button
-                                                onClick={() =>
-                                                    handleDelete(task.id)
-                                                }
-                                                className="text-red-600"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                                                    return (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            className={`mb-3 rounded-xl bg-white p-4 shadow border-2 ${isOverdue
+                                                                ? "border-red-500"
+                                                                : "border-transparent"
+                                                                }`}
+                                                        >
+                                                            <h4 className="font-semibold">
+                                                                {task.title}
+                                                            </h4>
+
+                                                            <p className="mt-2 text-sm text-gray-500">
+                                                                {task.description}
+                                                            </p>
+
+                                                            <div className="mt-3 space-y-1 text-sm">
+                                                                <p>
+                                                                    Priority: {task.priority}
+                                                                </p>
+
+                                                                <p>
+                                                                    Assigned:{" "}
+                                                                    {task.assignedUser || "None"}
+                                                                </p>
+
+                                                                <p
+                                                                    className={
+                                                                        isOverdue
+                                                                            ? "font-medium text-red-500"
+                                                                            : ""
+                                                                    }
+                                                                >
+                                                                    Due: {task.dueDate}
+                                                                </p>
+                                                            </div>
+
+                                                            <div className="mt-4 flex gap-3">
+                                                                <Link
+                                                                    href={`/tasks/${task.id}`}
+                                                                    className="text-blue-600"
+                                                                >
+                                                                    View
+                                                                </Link>
+
+                                                                <button
+                                                                    onClick={() => handleEdit(task)}
+                                                                    className="text-yellow-600"
+                                                                >
+                                                                    Edit
+                                                                </button>
+
+                                                                <button
+                                                                    onClick={() =>
+                                                                        handleDelete(task.id)
+                                                                    }
+                                                                    className="text-red-600"
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }}
+                                            </Draggable>
+                                        ))}
+
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    ))}
+                </div>
+            </DragDropContext>
 
             {/* Task Modal */}
             {showModal && (
@@ -424,9 +474,10 @@ export default function ProjectDetailsPage() {
                                 }
                                 className="w-full rounded-lg border p-3"
                             >
-                                <option>Pending</option>
-                                <option>In Progress</option>
-                                <option>Completed</option>
+                                <option>Backlog</option>
+                                <option>In Development</option>
+                                <option>In Review</option>
+                                <option>Shipped</option>
                             </select>
 
                             <div className="flex justify-end gap-3">

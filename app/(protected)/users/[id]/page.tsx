@@ -10,6 +10,7 @@ interface User {
     id: string;
     name: string;
     email: string;
+    role?: string;
 }
 
 interface Task {
@@ -26,6 +27,14 @@ export default function UserDetailsPage() {
 
     const [user, setUser] =
         useState<User | null>(null);
+    const [showEditModal, setShowEditModal] =
+        useState(false);
+
+    const [editForm, setEditForm] = useState({
+        name: "",
+        email: "",
+        role: "Not Assigned",
+    });
 
     const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -36,6 +45,13 @@ export default function UserDetailsPage() {
             );
 
             setUser(userResponse.data);
+            setEditForm({
+                name: userResponse.data.name,
+                email: userResponse.data.email,
+                role:
+                    userResponse.data.role ||
+                    "Not Assigned",
+            });
 
             const tasksResponse = await api.get(
                 "/tasks"
@@ -66,7 +82,9 @@ export default function UserDetailsPage() {
             </div>
         );
     }
-
+    const isValid =
+        editForm.name.trim() &&
+        editForm.email.trim();
     return (
         <div className="space-y-6">
             <div className="rounded-xl bg-white p-6 shadow">
@@ -75,12 +93,21 @@ export default function UserDetailsPage() {
                         User Details
                     </h1>
 
-                    <Link
-                        href="/users"
-                        className="rounded-lg border px-4 py-2"
-                    >
-                        Back
-                    </Link>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowEditModal(true)}
+                            className="rounded-lg bg-yellow-500 px-4 py-2 text-white"
+                        >
+                            Edit User
+                        </button>
+
+                        <Link
+                            href="/users"
+                            className="rounded-lg border px-4 py-2"
+                        >
+                            Back
+                        </Link>
+                    </div>
                 </div>
 
                 <p className="mb-3">
@@ -92,7 +119,10 @@ export default function UserDetailsPage() {
                     <strong>Email:</strong>{" "}
                     {user.email}
                 </p>
-
+                <p className="mb-3">
+                    <strong>Role:</strong>{" "}
+                    {user.role || "Not Assigned"}
+                </p>
                 <p>
                     <strong>User ID:</strong>{" "}
                     {user.id}
@@ -138,6 +168,112 @@ export default function UserDetailsPage() {
                     </div>
                 )}
             </div>
+            {showEditModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="w-full max-w-md rounded-xl bg-white p-6">
+                        <h2 className="mb-4 text-2xl font-bold">
+                            Edit User
+                        </h2>
+
+                        <div className="space-y-4">
+                            <input
+                                value={editForm.name}
+                                onChange={(e) =>
+                                    setEditForm({
+                                        ...editForm,
+                                        name: e.target.value,
+                                    })
+                                }
+                                className="w-full rounded-lg border p-3"
+                                placeholder="Name"
+                            />
+
+                            <input
+                                value={editForm.email}
+                                onChange={(e) =>
+                                    setEditForm({
+                                        ...editForm,
+                                        email: e.target.value,
+                                    })
+                                }
+                                className="w-full rounded-lg border p-3"
+                                placeholder="Email"
+                            />
+
+                            <select
+                                value={editForm.role}
+                                onChange={(e) =>
+                                    setEditForm({
+                                        ...editForm,
+                                        role: e.target.value,
+                                    })
+                                }
+                                className="w-full rounded-lg border p-3"
+                            >
+                                <option>
+                                    Not Assigned
+                                </option>
+                                <option>Admin</option>
+                                <option>Manager</option>
+                                <option>Developer</option>
+                                <option>QA</option>
+                                <option>Viewer</option>
+                            </select>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button
+                                onClick={() =>
+                                    setShowEditModal(false)
+                                }
+                                className="rounded-lg border px-4 py-2"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                onClick={async () => {
+                                    if (!editForm.name.trim()) {
+                                        toast.error("Name is required");
+                                        return;
+                                    }
+
+                                    if (!editForm.email.trim()) {
+                                        toast.error("Email is required");
+                                        return;
+                                    }
+
+                                    try {
+                                        await api.patch(
+                                            `/users/${userId}`,
+                                            editForm
+                                        );
+
+                                        toast.success("User updated");
+
+                                        setShowEditModal(false);
+
+                                        fetchData();
+                                    } catch {
+                                        toast.error(
+                                            "Failed to update user"
+                                        );
+                                    }
+                                }}
+                                disabled={!isValid}
+
+                                className={`rounded-lg px-4 py-2 text-white transition
+        ${isValid
+                                        ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                                        : "bg-gray-400 cursor-not-allowed opacity-50"
+                                    }`}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -4,13 +4,22 @@
       "name": "Qurat ul Ain",
       "email": "quratulainsiddique12@gmail.com",
       "password": "qazwsx",
-      "id": "nDCxe-uCDus"
+      "id": "nDCxe-uCDus",
+      "role": "Admin"
     },
     {
       "name": "Qurat ul Ain",
       "email": "quratulainsiddique@gmail.com",
       "password": "12345",
-      "id": "ovfUBDluyrA"
+      "id": "ovfUBDluyrA",
+      "role": "Developer"
+    },
+    {
+      "name": "ws",
+      "email": "ed",
+      "password": "qqqqq",
+      "role": "Developer",
+      "id": "PD3db2LWcnI"
     }
   ],
   "projects": [
@@ -27,11 +36,41 @@
       "title": "aaa",
       "description": "aaaaa",
       "priority": "Medium",
-      "dueDate": "2026-06-24",
-      "assignedUser": "aaa",
-      "status": "Pending",
+      "dueDate": "2026-06-01",
+      "assignedUser": "Qurat ul Ain",
+      "status": "In Development",
       "projectId": "f89RLX7D-ZQ",
       "id": "M6GZ4Qzth3w"
+    },
+    {
+      "title": "qaz",
+      "description": "wsx",
+      "priority": "High",
+      "dueDate": "2026-06-26",
+      "assignedUser": "Qurat ul Ain",
+      "status": "In Review",
+      "projectId": "f89RLX7D-ZQ",
+      "id": "N2MWCsL8uhY"
+    },
+    {
+      "title": "123",
+      "description": "123",
+      "priority": "Medium",
+      "dueDate": "2026-06-17",
+      "assignedUser": "Qurat ul Ain",
+      "status": "Backlog",
+      "projectId": "f89RLX7D-ZQ",
+      "id": "Cgyu4Tr0BSU"
+    },
+    {
+      "title": "sas",
+      "description": "dvsb",
+      "priority": "Medium",
+      "dueDate": "2026-06-11",
+      "assignedUser": "Qurat ul Ain",
+      "status": "Shipped",
+      "projectId": "f89RLX7D-ZQ",
+      "id": "xDJa-bdvxr0"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
