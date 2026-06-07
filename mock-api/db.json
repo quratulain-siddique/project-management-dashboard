@@ -3,7 +3,7 @@
     {
       "name": "Qurat ul Ain",
       "email": "quratulainsiddique12@gmail.com",
-      "password": "12345",
+      "password": "qazwsx",
       "id": "nDCxe-uCDus"
     },
     {
@@ -13,7 +13,26 @@
       "id": "ovfUBDluyrA"
     }
   ],
-  "projects": [],
-  "tasks": [],
+  "projects": [
+    {
+      "name": "qaz",
+      "description": "qaz wsx",
+      "status": "Active",
+      "createdDate": "2026-06-07",
+      "id": "f89RLX7D-ZQ"
+    }
+  ],
+  "tasks": [
+    {
+      "title": "aaa",
+      "description": "aaaaa",
+      "priority": "Medium",
+      "dueDate": "2026-06-24",
+      "assignedUser": "aaa",
+      "status": "Pending",
+      "projectId": "f89RLX7D-ZQ",
+      "id": "M6GZ4Qzth3w"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

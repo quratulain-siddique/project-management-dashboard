@@ -1,5 +1,5 @@
 "use client";
-
+import { api } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -15,6 +15,41 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const [userName, setUserName] = useState("");
+  const fetchDashboardData = async () => {
+    try {
+      const [projectsResponse, tasksResponse] =
+        await Promise.all([
+          api.get("/projects"),
+          api.get("/tasks"),
+        ]);
+
+      const projects = projectsResponse.data;
+      const tasks = tasksResponse.data;
+
+      setStats({
+        totalProjects: projects.length,
+        totalTasks: tasks.length,
+        completedTasks: tasks.filter(
+          (task: any) =>
+            task.status?.toLowerCase() === "completed"
+        ).length,
+        pendingTasks: tasks.filter(
+          (task: any) =>
+            task.status?.toLowerCase() !== "completed"
+        ).length,
+      });
+
+      setRecentProjects(
+        [...projects].reverse().slice(0, 5)
+      );
+
+      setRecentTasks(
+        [...tasks].reverse().slice(0, 5)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,6 +61,8 @@ export default function DashboardPage() {
     }
 
     setUserName(JSON.parse(user).name);
+
+    fetchDashboardData();
   }, [router]);
 
   const handleLogout = () => {
@@ -33,12 +70,15 @@ export default function DashboardPage() {
     router.push("/login");
   };
 
-  const stats = {
-    totalProjects: 12,
-    totalTasks: 48,
-    completedTasks: 30,
-    pendingTasks: 18,
-  };
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    totalTasks: 0,
+    completedTasks: 0,
+    pendingTasks: 0,
+  });
+
+  const [recentProjects, setRecentProjects] = useState<any[]>([]);
+  const [recentTasks, setRecentTasks] = useState<any[]>([]);
 
   const chartData = [
     {
@@ -61,21 +101,9 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <nav className="flex items-center justify-between bg-white px-8 py-4 shadow-sm">
-        <h1 className="text-2xl font-bold">
-          Task Manager Dashboard
-        </h1>
 
-        <button
-          onClick={handleLogout}
-          className="rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
-        >
-          Logout
-        </button>
-      </nav>
 
-      <div className="p-8">
+      <div className="p-2">
         {/* Welcome */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold">
@@ -139,17 +167,20 @@ export default function DashboardPage() {
             </h3>
 
             <ul className="space-y-3">
-              <li className="rounded border p-3">
-                E-Commerce Website
-              </li>
-
-              <li className="rounded border p-3">
-                CRM Dashboard
-              </li>
-
-              <li className="rounded border p-3">
-                HR Management System
-              </li>
+              {recentProjects.length === 0 ? (
+                <li className="rounded border p-3">
+                  No projects found
+                </li>
+              ) : (
+                recentProjects.map((project) => (
+                  <li
+                    key={project.id}
+                    className="rounded border p-3"
+                  >
+                    {project.name}
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 
@@ -159,17 +190,20 @@ export default function DashboardPage() {
             </h3>
 
             <ul className="space-y-3">
-              <li className="rounded border p-3">
-                Design Login Page
-              </li>
-
-              <li className="rounded border p-3">
-                Create Task API
-              </li>
-
-              <li className="rounded border p-3">
-                Implement Dashboard
-              </li>
+              {recentTasks.length === 0 ? (
+                <li className="rounded border p-3">
+                  No tasks found
+                </li>
+              ) : (
+                recentTasks.map((task) => (
+                  <li
+                    key={task.id}
+                    className="rounded border p-3"
+                  >
+                    {task.title}
+                  </li>
+                ))
+              )}
             </ul>
           </div>
         </div>
