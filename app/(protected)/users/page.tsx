@@ -119,10 +119,12 @@ export default function UsersPage() {
                                                     ? "bg-blue-100 text-blue-700"
                                                     : user.role === "QA"
                                                         ? "bg-green-100 text-green-700"
-                                                        : "bg-gray-100 text-gray-600"
+                                                        : user.role === "Viewer"
+                                                            ? "bg-purple-100 text-purple-700"
+                                                            : "bg-gray-100 text-gray-600"
                                             }`}
                                     >
-                                        {user.role || "Viewer"}
+                                        {user.role || "Not Assigned"}
                                     </span>
                                 </td>
 
@@ -200,11 +202,14 @@ export default function UsersPage() {
                                 }
                                 className="w-full rounded-lg border p-3"
                             >
-                                <option>Admin</option>
-                                <option>Manager</option>
-                                <option>Developer</option>
-                                <option>QA</option>
-                                <option>Viewer</option>
+                                <option value="Not Assigned">
+                                    Not Assigned
+                                </option>
+                                <option value="Admin">Admin</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Developer">Developer</option>
+                                <option value="QA">QA</option>
+                                <option value="Viewer">Viewer</option>
                             </select>
                         </div>
 
@@ -240,7 +245,7 @@ export default function UsersPage() {
                                             name: "",
                                             email: "",
                                             password: "",
-                                            role: "Developer",
+                                            role: "Not Assigned",
                                         });
                                     } catch {
                                         toast.error(
