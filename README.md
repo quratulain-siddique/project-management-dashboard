@@ -1,8 +1,8 @@
 # Task Manager Dashboard
 
-A modern Project and Task Management Dashboard built with Next.js, TypeScript, Tailwind CSS, Axios, and JSON Server.
+A modern Project & Task Management Dashboard built with Next.js, TypeScript, Tailwind CSS, Axios, Recharts, and JSON Server.
 
-The application allows users to manage projects, tasks, and team members through an intuitive dashboard interface. It includes authentication screens, analytics, project tracking, task boards, drag-and-drop functionality, and user management.
+The application enables teams to manage projects, tasks, and users through a clean and responsive interface featuring analytics, Kanban boards, role management, filtering, and task tracking.
 
 ---
 
@@ -15,43 +15,62 @@ The application allows users to manage projects, tasks, and team members through
 * Forgot Password
 * Form Validation
 * Error Handling
-* Local Storage Token Management
+* Local Storage Session Management
 * Protected Routes
 
-### Dashboard
+---
 
-* Total Projects
-* Total Tasks
-* Completed Tasks
-* Pending Tasks
+## Dashboard
+
+* Welcome Dashboard
+* Total Projects Counter
+* Total Tasks Counter
+* Completed Tasks Counter
+* Pending Tasks Counter
 * Analytics Charts using Recharts
-* Recent Projects
-* Recent Tasks
+* Recent Projects Section
+* Recent Tasks Section
+* Clickable Project & Task Records
 
-### Project Management
+---
+
+## Project Management
+
+### Supported Actions
 
 * Create Project
 * Edit Project
 * Delete Project
 * View Project Details
 
-Project Fields:
+### Project Information
 
-* Project Name
+* Name
 * Description
 * Status
 * Created Date
 
-### Task Management
+### Project Details
+
+* Kanban Task Board
+* Drag & Drop Task Management
+* Task Statistics
+* Linked Task Navigation
+
+---
+
+## Task Management
+
+### Supported Actions
 
 * Create Task
 * Edit Task
 * Delete Task
-* Assign Task to User
-* Drag & Drop Task Board (Kanban Style)
-* Task Status Management
+* View Task Details
+* Assign Task to Users
+* Drag & Drop Between Status Columns
 
-Task Fields:
+### Task Information
 
 * Title
 * Description
@@ -59,23 +78,81 @@ Task Fields:
 * Due Date
 * Assigned User
 * Status
-* Project ID
+* Related Project
 
-### User Management
+### Task Status Workflow
 
-* View All Users
+Backlog → In Development → In Review → Shipped
+
+### Task Filters
+
+* Filter by Assigned User
+* Filter by Due Date
+* Sort Alphabetically (A-Z)
+* Reset Filters
+
+### Overdue Task Detection
+
+Tasks with expired due dates are automatically highlighted:
+
+* Red Border
+* Visual Warning Indicator
+
+---
+
+## User Management
+
+### Supported Actions
+
+* View Users
 * View User Details
-* User Task Assignment
+* Edit Users
+* Create Users (Admin Only)
 
-### UI Features
+### User Information
 
-* Responsive Design
+* Name
+* Email
+* Role
+
+### Available Roles
+
+* Admin
+* Manager
+* Developer
+* QA
+* Viewer
+* Not Assigned
+
+### Role Permissions
+
+#### Admin
+
+* Create Users
+* Edit Users
+* View Users
+* Manage Projects
+* Manage Tasks
+
+#### Other Roles
+
+* View and manage assigned resources according to application rules
+
+---
+
+## UI & UX Features
+
+* Fully Responsive Layout
+* Modern Dashboard Design
 * Collapsible Sidebar
-* Sticky Navigation Bar
-* Modern Dashboard Layout
+* Sticky Navigation
 * Toast Notifications
-* Colorful Theme
-* Overdue Task Highlighting
+* Color-Coded Status Badges
+* Priority Indicators
+* Hover Effects
+* Interactive Tables
+* Custom Cursor Effects
+* Clean Modal Forms
 
 ---
 
@@ -83,8 +160,8 @@ Task Fields:
 
 ### Frontend
 
-* Next.js 16
-* React 19
+* Next.js
+* React
 * TypeScript
 * Tailwind CSS
 
@@ -93,7 +170,7 @@ Task Fields:
 * React Hooks
 * Local Storage
 
-### API Handling
+### API Communication
 
 * Axios
 
@@ -111,7 +188,7 @@ Task Fields:
 
 * React Toastify
 
-### Drag and Drop
+### Drag & Drop
 
 * @hello-pangea/dnd
 
@@ -120,7 +197,6 @@ Task Fields:
 * JSON Server
 
 ---
-
 
 ## Installation
 
@@ -138,34 +214,6 @@ npm install
 
 ---
 
-## Running the Application
-
-Start JSON Server:
-
-```bash
-npx json-server mock-api/db.json --port 5000
-```
-
-Start the Next.js application:
-
-```bash
-npm run dev
-```
-
-Application URL:
-
-```text
-http://localhost:3000
-```
-
-Mock API URL:
-
-```text
-http://localhost:5000
-```
-
----
-
 ## Environment Configuration
 
 Create a `.env.local` file:
@@ -174,33 +222,79 @@ Create a `.env.local` file:
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
+Update your Axios instance:
+
+```ts
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+});
+```
+
+---
+
+## Running Locally
+
+### Start JSON Server
+
+```bash
+npm run api
+```
+
+### Start Next.js
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```text
+http://localhost:3000
+```
+
+Backend:
+
+```text
+http://localhost:5000
+```
+
+---
+
+## Deployment
+
+### Frontend
+
+Deploy using:
+
+* Render
+* Netlify
+* Vercel
+
+### Backend
+
+Deploy JSON Server separately on:
+
+* Render Web Service
+* Railway
+* Cyclic
+
+Example Environment Variable for Production:
+
+```env
+NEXT_PUBLIC_API_URL=https://your-api-url.onrender.com
+```
+
 ---
 
 ## Authentication Flow
 
-1. User creates an account.
+1. User registers.
 2. User information is stored in JSON Server.
-3. Token is stored in Local Storage.
-4. Protected routes verify token availability.
-5. Logout clears stored session data.
-
----
-
-## Task Board Workflow
-
-Tasks move through the following stages:
-
-```text
-Backlog
-    ↓
-In Development
-    ↓
-In Review
-    ↓
-Shipped
-```
-
-Tasks can be dragged and dropped between columns to update their status.
+3. Session information is stored in Local Storage.
+4. Protected routes verify authentication.
+5. Logout clears session data.
 
 ---
 
@@ -208,38 +302,39 @@ Tasks can be dragged and dropped between columns to update their status.
 
 ### Automatic Project Cleanup
 
-When a project is deleted:
-
-* Associated tasks are automatically deleted.
-
-### Overdue Task Detection
-
-Tasks with due dates older than the current date:
-
-* Display a red border
-* Highlight the due date
+Deleting a project automatically removes all associated tasks.
 
 ### User Assignment
 
-Tasks can be assigned directly from a dropdown containing available users.
+Tasks can be assigned directly through dropdown user selection.
+
+### Task Navigation
+
+Tasks and Projects are interconnected through clickable navigation links.
+
+### User Task Tracking
+
+User detail pages display all assigned tasks.
 
 ---
 
 ## Future Improvements
 
-* Redux Toolkit Integration
+* JWT Authentication
+* Role-Based Route Protection
 * Dark Mode
-* Role-Based Access Control
+* Redux Toolkit
 * Unit Testing
 * Docker Support
-* API Authentication
-* Real Backend Integration
-* Advanced Analytics
+* PostgreSQL / MongoDB Backend
 * File Attachments
 * Team Collaboration Features
+* Activity Logs
+* Notifications System
+* Advanced Reporting
 
 ---
 
 ## Author
 
-Developed as a Project & Task Management Dashboard assessment project using Next.js, TypeScript, Tailwind CSS, Axios, and JSON Server.
+Developed as a Project Management Dashboard assessment project using Next.js, TypeScript, Tailwind CSS, Axios, Recharts, and JSON Server.
